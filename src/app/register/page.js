@@ -1,30 +1,54 @@
 "use client";
 
-import {
-  TextField,
-  Button,
-  MenuItem,
-  Card,
-  CardContent,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
-
-import {
-  PersonOutline,
-  EmailOutlined,
-  LockOutlined,
-  Visibility,
-  VisibilityOff,
-  WorkOutline,
-} from "@mui/icons-material";
-
 import { useState } from "react";
+import Link from "next/link";
+import { registrationAction } from "./registrationAction.action";
+import { toast } from 'react-toastify';
+
 
 const page = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+
+  const [form, setForm] = useState({
+    name: "",
+    userName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "applicant",
+  });
+  // console.log(form);
+
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    // console.log(form);
+
+    const registrationData = {
+      name: form.name.trim(),
+      userName: form.userName.trim(),
+      email: form.email.toLowerCase().trim(),
+      password: form.password,
+      role: form.role,
+    };
+
+    if (form.password !== form.confirmPassword) {
+      return toast.error("Passwords do not match!");
+    }
+
+    const result = await registrationAction(registrationData);
+    if (result.status === "SUCCESS") toast.success(result.message);
+    else toast.error(result.message);
+
+  }
+
 
   return (
     <>
@@ -59,7 +83,7 @@ const page = () => {
             </p>
 
             {/* FORM */}
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
 
               {/* Full Name */}
               <div>
@@ -88,6 +112,9 @@ const page = () => {
                   </span>
                   <input
                     type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
                     placeholder="Enter your full name"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
@@ -121,6 +148,9 @@ const page = () => {
                   </span>
                   <input
                     type="text"
+                    name="userName"
+                    value={form.userName}
+                    onChange={handleChange}
                     placeholder="Choose a username"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
@@ -149,6 +179,9 @@ const page = () => {
                   </span>
                   <input
                     type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
@@ -159,10 +192,13 @@ const page = () => {
               <div>
                 <label className="block font-medium text-sm mb-1">I am a *</label>
                 <select
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:ring-black focus:border-black"
                 >
-                  <option>Job Applicant</option>
-                  <option>Recruiter</option>
+                  <option value="applicant">Job Applicant</option>
+                  <option value="employer">Employer</option>
                 </select>
               </div>
 
@@ -189,6 +225,9 @@ const page = () => {
 
                   <input
                     type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
                     placeholder="Create a strong password"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-10 text-sm focus:ring-black focus:border-black"
                   />
@@ -240,6 +279,9 @@ const page = () => {
 
                   <input
                     type="password"
+                    name="confirmPassword"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
                     placeholder="Confirm your password"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-10 text-sm focus:ring-black focus:border-black"
                   />
@@ -280,9 +322,9 @@ const page = () => {
             {/* Footer */}
             <p className="text-center text-sm text-gray-600 mt-6">
               Already have an account?{" "}
-              <a href="/login" className="text-black font-semibold hover:underline">
+              <Link href="/login" className="text-black font-semibold hover:underline">
                 Sign in here
-              </a>
+              </Link>
             </p>
           </div>
         </div>

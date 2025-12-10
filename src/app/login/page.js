@@ -7,7 +7,7 @@ import LockIcon from "@mui/icons-material/Lock";
 
 const page = () => {
 
-   const [form, setForm] = useState({
+  const [form, setForm] = useState({
     email: "",
     password: "",
   });
@@ -15,6 +15,13 @@ const page = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    console.log(form);
+
+  }
 
   return (
     <>
@@ -37,42 +44,44 @@ const page = () => {
               Login to continue
             </p>
 
-            {/* Email */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Email Address *</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-                <EmailIcon className="text-gray-500 mr-2" fontSize="small" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-sm"
-                />
+            <form onSubmit={handleSubmit}>
+              {/* Email */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Email Address *</label>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <EmailIcon className="text-gray-500 mr-2" fontSize="small" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full bg-transparent outline-none text-sm"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Password */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-1">Password *</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-                <LockIcon className="text-gray-500 mr-2" fontSize="small" />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={handleChange}
-                  className="w-full bg-transparent outline-none text-sm"
-                />
+              {/* Password */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-1">Password *</label>
+                <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+                  <LockIcon className="text-gray-500 mr-2" fontSize="small" />
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full bg-transparent outline-none text-sm"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Login Button */}
-            <button className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition">
-              Login
-            </button>
+              {/* Login Button */}
+              <button className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition">
+                Login
+              </button>
+            </form>
 
             {/* Footer */}
             <p className="text-center text-sm text-gray-600 mt-4">

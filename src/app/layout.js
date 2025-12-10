@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 export const metadata = {
@@ -10,6 +11,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         {children}
+           <ToastContainer />
       </body>
     </html>
   );
