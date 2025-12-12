@@ -22,20 +22,29 @@ const page = () => {
     resolver: zodResolver(registerUserWithConfirmSchema),
   });
 
+  const [loading, setLoading] = useState(false);
+
   const onSubmit = async (data) => {
-    // console.log("register Data -: ", data);
+    try {
+      setLoading(true);
 
-    const result = await registrationAction(data);
+      const result = await registrationAction(data);
 
-    if (result.status === "SUCCESS") toast.success(result.message);
-    else toast.error(result.message);
+      if (result.status === "SUCCESS") toast.success(result.message);
+      else toast.error(result.message);
+
+    } catch (err) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ❗ BackEnd Validation errors ko toast me show karne ke liye:
   const onError = (errors) => {
-    Object.values(errors).forEach((err) => {
-      toast.error(err.message);
-    });
+    const firstError = Object.values(errors)[0];  // get first error only
+    if (firstError) {
+      toast.error(firstError.message);
+    }
   };
 
 
@@ -305,9 +314,12 @@ const page = () => {
               {/* Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium mt-2"
+              //           className={`w-full bg-blue-600 text-white py-2 rounded-md font-semibold transition-all 
+              // ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"}`}
               >
-                Create Account
+                {loading ? "Submitting..." : "Register"}
               </button>
             </form>
 
