@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { registrationAction } from "./registrationAction.action";
+import { registrationAction } from "@/features/auth/server/auth.actions.jsx";
 import { toast } from 'react-toastify';
+import { registerUserWithConfirmSchema } from "@/features/auth/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 
 const page = () => {
@@ -11,43 +14,29 @@ const page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    userName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "applicant",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerUserWithConfirmSchema),
   });
-  // console.log(form);
 
+  const onSubmit = async (data) => {
+    // console.log("register Data -: ", data);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    const result = await registrationAction(data);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    // console.log(form);
-
-    const registrationData = {
-      name: form.name.trim(),
-      userName: form.userName.trim(),
-      email: form.email.toLowerCase().trim(),
-      password: form.password,
-      role: form.role,
-    };
-
-    if (form.password !== form.confirmPassword) {
-      return toast.error("Passwords do not match!");
-    }
-
-    const result = await registrationAction(registrationData);
     if (result.status === "SUCCESS") toast.success(result.message);
     else toast.error(result.message);
+  };
 
-  }
+  // ❗ BackEnd Validation errors ko toast me show karne ke liye:
+  const onError = (errors) => {
+    Object.values(errors).forEach((err) => {
+      toast.error(err.message);
+    });
+  };
 
 
   return (
@@ -83,7 +72,7 @@ const page = () => {
             </p>
 
             {/* FORM */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-4">
 
               {/* Full Name */}
               <div>
@@ -112,9 +101,7 @@ const page = () => {
                   </span>
                   <input
                     type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
+                    {...register("name")}
                     placeholder="Enter your full name"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
@@ -148,13 +135,16 @@ const page = () => {
                   </span>
                   <input
                     type="text"
-                    name="userName"
-                    value={form.userName}
-                    onChange={handleChange}
+                    {...register("userName")}
                     placeholder="Choose a username"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
                 </div>
+                {errors.userName && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.userName.message}
+                  </p>
+                )}
               </div>
 
               {/* Email */}
@@ -179,9 +169,7 @@ const page = () => {
                   </span>
                   <input
                     type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
+                    {...register("email")}
                     placeholder="Enter your email"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-3 text-sm focus:ring-black focus:border-black"
                   />
@@ -192,9 +180,7 @@ const page = () => {
               <div>
                 <label className="block font-medium text-sm mb-1">I am a *</label>
                 <select
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
+                  {...register("role")}
                   className="w-full border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:ring-black focus:border-black"
                 >
                   <option value="applicant">Job Applicant</option>
@@ -225,9 +211,7 @@ const page = () => {
 
                   <input
                     type="password"
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
+                    {...register("password")}
                     placeholder="Create a strong password"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-10 text-sm focus:ring-black focus:border-black"
                   />
@@ -254,6 +238,11 @@ const page = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -279,9 +268,7 @@ const page = () => {
 
                   <input
                     type="password"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
+                    {...register("confirmPassword")}
                     placeholder="Confirm your password"
                     className="w-full border border-gray-300 rounded-lg py-2.5 pl-11 pr-10 text-sm focus:ring-black focus:border-black"
                   />
@@ -308,6 +295,11 @@ const page = () => {
                     </svg>
                   </span>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
 
               {/* Button */}

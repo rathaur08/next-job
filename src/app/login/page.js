@@ -4,22 +4,31 @@ import { useState } from "react";
 import Link from "next/link";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
+import { loginAction } from "@/features/auth/server/auth.actions";
+import { useForm } from "react-hook-form";
+import { loginUserSchema } from "@/features/auth/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 const page = () => {
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginUserSchema),
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const onSubmit = async (data) => {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log(form);
+    console.log("Data 123445767809 -: ", data);
+    
+
+    const result = await loginAction(data);
+    if (result.status === "SUCCESS") toast.success(result.message);
+    else toast.error(result.message);
 
   }
 
@@ -44,7 +53,7 @@ const page = () => {
               Login to continue
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               {/* Email */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Email Address *</label>
@@ -52,13 +61,16 @@ const page = () => {
                   <EmailIcon className="text-gray-500 mr-2" fontSize="small" />
                   <input
                     type="email"
-                    name="email"
                     placeholder="Enter your email"
-                    value={form.email}
-                    onChange={handleChange}
+                    {...register("email")}
                     className="w-full bg-transparent outline-none text-sm"
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -68,13 +80,16 @@ const page = () => {
                   <LockIcon className="text-gray-500 mr-2" fontSize="small" />
                   <input
                     type="password"
-                    name="password"
                     placeholder="Enter your password"
-                    value={form.password}
-                    onChange={handleChange}
+                    {...register("password")}
                     className="w-full bg-transparent outline-none text-sm"
                   />
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               {/* Login Button */}

@@ -4,13 +4,18 @@ import { db } from "@/config/db";
 import { users } from "@/drizzle/schema";
 import { eq, or } from "drizzle-orm";
 import argon2 from "argon2";
+import { registerUserSchema } from "../auth.schema";
 
 export const registrationAction = async (data) => {
   // Process registration data here
   console.log("Registration Data:", data);
   try {
+
+    const { data: validatedData, error } = registerUserSchema.safeParse(data);
+    if (error) return { status: "ERROR", message: error.issues[0].message };
+
     // console.log(formData.get("name"));
-    const { name, userName, email, password, role } = data;
+    const { name, userName, email, password, role } = validatedData;
 
     const [user] = await db
       .select()
@@ -50,3 +55,39 @@ export const registrationAction = async (data) => {
   }
 
 }
+
+
+export const loginAction = async (data) => {
+  try {
+    // console.log(formData.get("name"));
+    const { email, password } = data;
+
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+
+    if (!user) {
+      return {
+        status: "ERROR",
+        message: "Email not registered",
+      };
+    }
+
+    const isValidPassword = await argon2.verify(user.password, password);
+
+    if (!isValidPassword) {
+      return {
+        status: "ERROR",
+        message: "Password is incorrect",
+      };
+    }
+
+    return {
+      status: "SUCCESS",
+      message: "Login Completed Successfully",
+    };
+  } catch (error) {
+    return {
+      status: "ERROR",
+      message: "Unknown Error Occurred! Please Try Again Later",
+    };
+  }
+};
