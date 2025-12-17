@@ -7,9 +7,12 @@ import { toast } from 'react-toastify';
 import { registerUserWithConfirmSchema } from "@/features/auth/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 
 const page = () => {
+
+  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
@@ -29,6 +32,11 @@ const page = () => {
       setLoading(true);
 
       const result = await registrationAction(data);
+
+      if (result.status === "SUCCESS") {
+        if (data.role === "employer") router.push("employer-dashboard");
+        else router.push("/");
+      }
 
       if (result.status === "SUCCESS") toast.success(result.message);
       else toast.error(result.message);
