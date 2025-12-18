@@ -10,10 +10,10 @@ const generateSessionToken = () => {
   return crypto.randomBytes(32).toString("hex").normalize();
 }
 
-const createUserSession = async ({ token, userId, ip, userAgent }) => {
+const createUserSession = async ({ token, userId, ip, userAgent, tx = db, }) => {
   const hashedToken = crypto.createHash("sha-256").update(token).digest("hex");
 
-  const [session] = await db.insert(sessions).values({
+  const [session] = await tx.insert(sessions).values({
     id: hashedToken,
     userId,
     ip,
@@ -24,7 +24,7 @@ const createUserSession = async ({ token, userId, ip, userAgent }) => {
   return session;
 };
 
-export const createSessionAndCookies = async (userId) => {
+export const createSessionAndCookies = async (userId, tx = db) => {
 
   // console.log("userId", userId);
 
@@ -37,6 +37,7 @@ export const createSessionAndCookies = async (userId) => {
     token,
     ip,
     userAgent: headersList.get("user-agent") || " ",
+    tx,
   });
 
   const createCookie = await cookies();
