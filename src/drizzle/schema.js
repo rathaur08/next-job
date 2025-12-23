@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import {
-  datetime,
   int,
   mysqlEnum,
   mysqlTable,
@@ -8,6 +7,7 @@ import {
   timestamp,
   varchar,
   year,
+  datetime,
 } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
@@ -44,6 +44,7 @@ export const employers = mysqlTable("employers", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }),
   description: text("description"),
+  avatarUrl: text("avatar_url"),
   bannerImageUrl: text("banner_image_url"),
   organizationType: varchar("organization_type", { length: 100 }),
   teamSize: varchar("team_size", { length: 50 }),
@@ -52,7 +53,7 @@ export const employers = mysqlTable("employers", {
   location: varchar("location", { length: 255 }),
   deletedAt: timestamp("deleted_at", { mode: "string" }),
   createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "string" }).onUpdateNow().notNull(),
 });
 
 export const applicants = mysqlTable("applicants", {
@@ -76,7 +77,7 @@ export const applicants = mysqlTable("applicants", {
   location: varchar("location", { length: 255 }),
   deletedAt: timestamp("deleted_at", { mode: "string" }),
   createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "string" }).onUpdateNow().notNull(),
 });
 
 // Relations definitions

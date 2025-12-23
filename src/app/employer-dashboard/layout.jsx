@@ -1,16 +1,20 @@
+import EmployerSidebar from "@/features/auth/employers/components/EmployerSidebar";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
 import { redirect } from "next/navigation";
 
 export default async function RootLayout({ children }) {
   const user = await getCurrentUser();
-  //   // console.log("Current User:", user);
+  // console.log("Current User:", user);
 
   if (!user) return redirect("/login");
   if (user.role !== "employer") return redirect("/dashboard");
 
   return (
     <>
-      {children}
+      <div className="flex min-h-screen bg-gray-50">
+        <EmployerSidebar />
+        <main className="flex-1 p-6 md:p-10">{children}</main>
+      </div>
     </>
   );
 }
