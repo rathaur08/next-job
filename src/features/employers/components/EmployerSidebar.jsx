@@ -1,3 +1,4 @@
+import { logoutUserAction } from "@/features/auth/server/auth.actions";
 import {
   BriefcaseIcon,
   UsersIcon,
@@ -8,7 +9,6 @@ import {
   Cog6ToothIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
-import { logoutUserAction } from "../../server/auth.actions";
 import Link from "next/link";
 
 const EmployerSidebar = () => {
@@ -23,7 +23,6 @@ const EmployerSidebar = () => {
           <SidebarItem
             icon={<BriefcaseIcon className="w-5 h-5" />}
             label="Overview"
-            active
           />
         </Link>
 
@@ -57,10 +56,11 @@ const EmployerSidebar = () => {
           label="All Companies"
         />
 
-        <Link href="/settings">
+        <Link href="/employer-dashboard/settings">
           <SidebarItem
             icon={<Cog6ToothIcon className="w-5 h-5" />}
             label="Settings"
+            active
           />
         </Link>
       </nav>

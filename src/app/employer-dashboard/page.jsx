@@ -1,6 +1,6 @@
-import EmployerProfileCompletionStatus from "@/features/auth/employers/components/EmployerProfileCompletionStatus";
-import EmployersStatsCards from "@/features/auth/employers/components/EmployersStatsCards";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import EmployerProfileCompletionStatus from "@/features/employers/components/EmployerProfileCompletionStatus";
+import EmployersStatsCards from "@/features/employers/components/EmployersStatsCards";
 
 const EmployerDashboard = async () => {
   const user = await getCurrentUser();

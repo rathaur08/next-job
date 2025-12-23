@@ -1,5 +1,5 @@
-import EmployerSidebar from "@/features/auth/employers/components/EmployerSidebar";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import EmployerSidebar from "@/features/employers/components/EmployerSidebar";
 import { redirect } from "next/navigation";
 
 export default async function RootLayout({ children }) {

@@ -27,7 +27,7 @@ const EmployerProfileCompletionStatus = async () => {
           </div>
         </div>
 
-        <Link href="/setting" className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-md font-medium">
+        <Link href="/employer-dashboard/settings" className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-md font-medium">
           Complete Profile
         </Link>
       </div>
