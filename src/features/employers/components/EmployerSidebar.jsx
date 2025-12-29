@@ -1,4 +1,7 @@
-import { logoutUserAction } from "@/features/auth/server/auth.actions";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BriefcaseIcon,
   UsersIcon,
@@ -9,92 +12,105 @@ import {
   Cog6ToothIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import { logoutUserAction } from "@/features/auth/server/auth.actions";
+
+/* ---------------- MENU CONFIG ---------------- */
+
+const menuItems = [
+  {
+    name: "Overview",
+    href: "/employer-dashboard",
+    icon: BriefcaseIcon,
+  },
+  {
+    name: "Employers Profile",
+    href: "#",
+    icon: UsersIcon,
+  },
+  {
+    name: "Post a Job",
+    href: "#",
+    icon: PlusIcon,
+  },
+  {
+    name: "My Jobs",
+    href: "#",
+    icon: BuildingOffice2Icon,
+  },
+  {
+    name: "Saved Candidate",
+    href: "#",
+    icon: BookmarkIcon,
+  },
+  {
+    name: "Plans & Billing",
+    href: "#",
+    icon: CreditCardIcon,
+  },
+  {
+    name: "Settings",
+    href: "/employer-dashboard/settings",
+    icon: Cog6ToothIcon,
+  },
+];
+
+/* ---------------- ACTIVE LINK LOGIC (JSX SAFE) ---------------- */
+
+function isLinkActive({ href, pathname, base = "/" }) {
+  const normalizedHref = href.replace(/\/$/, "") || "/";
+
+  return normalizedHref === base
+    ? pathname === base || pathname === base + "/"
+    : pathname.startsWith(normalizedHref);
+}
+
+/* ---------------- SIDEBAR ---------------- */
 
 const EmployerSidebar = () => {
+  const pathname = usePathname();
+
   return (
     <aside className="w-64 bg-white border-r px-6 py-6 hidden md:flex flex-col">
       <h2 className="text-sm font-semibold text-gray-400 mb-6">
         EMPLOYERS DASHBOARD
       </h2>
 
-      <nav className="space-y-2">
-        <Link href="/employer-dashboard">
-          <SidebarItem
-            icon={<BriefcaseIcon className="w-5 h-5" />}
-            label="Overview"
-          />
-        </Link>
+      <nav className="space-y-1">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const active = isLinkActive({
+            href: item.href,
+            pathname,
+            base: "/employer-dashboard",
+          });
 
-        <SidebarItem
-          icon={<UsersIcon className="w-5 h-5" />}
-          label="Employers Profile"
-        />
-
-        <SidebarItem
-          icon={<PlusIcon className="w-5 h-5" />}
-          label="Post a Job"
-        />
-
-        <SidebarItem
-          icon={<BriefcaseIcon className="w-5 h-5" />}
-          label="My Jobs"
-        />
-
-        <SidebarItem
-          icon={<BookmarkIcon className="w-5 h-5" />}
-          label="Saved Candidate"
-        />
-
-        <SidebarItem
-          icon={<CreditCardIcon className="w-5 h-5" />}
-          label="Plans & Billing"
-        />
-
-        <SidebarItem
-          icon={<BuildingOffice2Icon className="w-5 h-5" />}
-          label="All Companies"
-        />
-
-        <Link href="/employer-dashboard/settings">
-          <SidebarItem
-            icon={<Cog6ToothIcon className="w-5 h-5" />}
-            label="Settings"
-            active
-          />
-        </Link>
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
+                ${active
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <Icon className="w-5 h-5" />
+              {item.name}
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Logout Button */}
-      {/* <form action={logoutUserAction} className="mt-auto pt-10"> */}
-      <button type="submit" className="w-full mt-auto pt-10" onClick={logoutUserAction}>
-        <SidebarItem
-          icon={<ArrowLeftOnRectangleIcon className="w-5 h-5" />}
-          label="Log-out"
-        />
+      {/* Logout */}
+      <button
+        onClick={logoutUserAction}
+        className="mt-auto pt-8 flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg"
+      >
+        <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+        Log-out
       </button>
-      {/* </form> */}
     </aside>
   );
 };
 
 export default EmployerSidebar;
-
-
-
-/* ------------------ Components ------------------ */
-
-function SidebarItem({ icon, label, active = false }) {
-  return (
-    <div
-      className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer text-sm font-medium transition
-        ${active
-          ? "bg-blue-100 text-blue-600"
-          : "text-gray-600 hover:bg-gray-100"
-        }`}
-    >
-      {icon}
-      <span>{label}</span>
-    </div>
-  );
-}
