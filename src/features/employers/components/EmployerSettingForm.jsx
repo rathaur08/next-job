@@ -12,11 +12,13 @@ import { updateEmployerProfileAction } from "@/features/server/EmployersAction";
 import { toast } from "react-toastify";
 import { employerProfileSchema, organizationTypes, teamSizes } from "../EmployerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import RichTextEditor from "@/components/RichTextEditor";
 
 export default function EmployerProfileForm({ initialData }) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -59,11 +61,16 @@ export default function EmployerProfileForm({ initialData }) {
 
         {/* Description */}
         <Field label="Company Description *" error={errors.description}>
-          <textarea
+          {/* <textarea
             rows={4}
             className="w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 focus:ring-black focus:outline-none"
             placeholder="Write about your company"
             {...register("description", { required: "Description is required" })}
+          /> */}
+          <RichTextEditor
+            name="description"
+            control={control}
+            // label="Description"
           />
         </Field>
 
