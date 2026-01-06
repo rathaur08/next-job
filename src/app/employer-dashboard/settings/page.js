@@ -3,6 +3,7 @@ import { getCurrentEmployerDetails } from "@/features/server/EmployersQueries";
 
 const page = async () => {
   const employer = await getCurrentEmployerDetails();
+  console.log("employer", employer);
 
   if (!employer) return redirect("/login");
 
@@ -20,8 +21,8 @@ const page = async () => {
               websiteUrl: employer.employerDetails.websiteUrl,
               yearOfEstablishment:
                 employer.employerDetails.yearOfEstablishment?.toString(),
-              // avatarUrl: employer.avatarUrl,
-              // bannerImageUrl: employer.employerDetails.bannerImageUrl,
+              avatarUrl: employer.avatarUrl,
+              bannerImageUrl: employer.employerDetails.bannerImageUrl,
             }
           }
         />

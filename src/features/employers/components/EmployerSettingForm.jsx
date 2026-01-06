@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   BuildingOffice2Icon,
   GlobeAltIcon,
@@ -13,12 +13,15 @@ import { toast } from "react-toastify";
 import { employerProfileSchema, organizationTypes, teamSizes } from "../EmployerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RichTextEditor from "@/components/RichTextEditor";
+import { UploadButton } from "@uploadthing/react";
 
 export default function EmployerProfileForm({ initialData }) {
   const {
     register,
     handleSubmit,
+    setValue,
     control,
+    watch,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -29,9 +32,18 @@ export default function EmployerProfileForm({ initialData }) {
       yearOfEstablishment: initialData?.yearOfEstablishment,
       websiteUrl: initialData?.websiteUrl || "",
       location: initialData?.location || "",
+      avatarUrl: initialData?.avatarUrl || "",
+      // bannerImageUrl: initialData?.bannerImageUrl || "",
     },
     resolver: zodResolver(employerProfileSchema),
   });
+
+  const avatarUrl = watch("avatarUrl");
+  console.log("avatarUrl--Updated:", avatarUrl);
+
+  const handleRemoveAvatar = () => {
+    setValue("avatarUrl", ""); //Programmatically update a form field’s value inside react-hook-form.
+  };
 
   const onSubmit = async (data) => {
     // console.log("Updated Data:", data);
@@ -50,6 +62,63 @@ export default function EmployerProfileForm({ initialData }) {
       <h2 className="text-xl font-semibold mb-6">Employer Setting Page</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+        <div className="grid lg:grid-cols-[1fr_4fr] gap-6">
+          {/* LOGO */}
+          {/* <UploadButton
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+              console.log("Uploaded files:", res[0].ufsUrl);
+              alert("Upload Completed");
+            }}
+            onUploadError={(error) => {
+              alert(`ERROR: ${error.message}`);
+            }}
+          /> */}
+
+          <div>
+            <label>Company Logo</label>
+            {avatarUrl ? (
+              <div className="flex items-center gap-4">
+                <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-border">
+                  <img
+                    src={avatarUrl}
+                    alt="Company logo"
+                    className="w-full h-full object-cover"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+                <button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleRemoveAvatar}
+                >
+                  {/* < className="w-4 h-4 mr-2" /> */}
+                  Remove Lo1234
+                  12go
+                </button>
+              </div>
+            ) : (
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  const profilePic = res[0];
+
+                  setValue("avatarUrl", profilePic.ufsUrl, {
+                    shouldDirty: true,
+                  });
+                  console.log("Files--: ", res);
+                }}
+                onUploadError={(error) => {
+                  toast.error(`Upload failed: ${error.message}`);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
         {/* Company Name */}
         <Field label="Company Name *" error={errors.name}>
           <Input
@@ -70,7 +139,7 @@ export default function EmployerProfileForm({ initialData }) {
           <RichTextEditor
             name="description"
             control={control}
-            // label="Description"
+          // label="Description"
           />
         </Field>
 

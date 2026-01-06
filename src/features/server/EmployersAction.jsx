@@ -2,7 +2,7 @@
 
 import { db } from "@/config/db";
 import { getCurrentUser } from "../auth/server/auth.queries";
-import { employers } from "@/drizzle/schema";
+import { employers, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { employerProfileSchema } from "../employers/EmployerSchema";
 
@@ -21,7 +21,7 @@ export const updateEmployerProfileAction = async (data) => {
     if (error) return { status: "ERROR", message: error.issues[0].message };
 
     // console.log(formData.get("name"));
-    const { name, description, organizationType, teamSize, yearOfEstablishment, websiteUrl, location, } = validatedData;
+    const { name, description, organizationType, teamSize, yearOfEstablishment, websiteUrl, location, avatarUrl } = validatedData;
 
     const updateEmployer = await db
       .update(employers)
@@ -39,6 +39,11 @@ export const updateEmployerProfileAction = async (data) => {
       .where(eq(employers.id, currentUser.id));
 
     // console.log("Update profile data:", updateEmployer);
+
+    await db
+      .update(users)
+      .set({ avatarUrl })
+      .where(eq(users.id, currentUser.id));
 
     return { status: "SUCCESS", message: "Profile Update Successfully" };
 

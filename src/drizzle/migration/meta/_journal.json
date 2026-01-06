@@ -29,6 +29,13 @@
       "when": 1766485328178,
       "tag": "0003_messy_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1767692361177,
+      "tag": "0004_right_vision",
+      "breakpoints": true
     }
   ]
 }
