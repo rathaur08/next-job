@@ -33,17 +33,21 @@ export default function EmployerProfileForm({ initialData }) {
       websiteUrl: initialData?.websiteUrl || "",
       location: initialData?.location || "",
       avatarUrl: initialData?.avatarUrl || "",
-      // bannerImageUrl: initialData?.bannerImageUrl || "",
+      bannerImageUrl: initialData?.bannerImageUrl || "",
     },
     resolver: zodResolver(employerProfileSchema),
   });
 
   const avatarUrl = watch("avatarUrl");
-  console.log("avatarUrl--Updated:", avatarUrl);
-
+  // console.log("avatarUrl--Updated:", avatarUrl);
   const handleRemoveAvatar = () => {
     setValue("avatarUrl", ""); //Programmatically update a form field’s value inside react-hook-form.
   };
+
+  const bannerImageUrl = watch("bannerImageUrl");
+  const handleRemoveBanner = () => {
+    setValue("bannerImageUrl", "");
+  }
 
   const onSubmit = async (data) => {
     // console.log("Updated Data:", data);
@@ -63,7 +67,7 @@ export default function EmployerProfileForm({ initialData }) {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-        <div className="grid lg:grid-cols-[1fr_4fr] gap-6">
+        <div className="grid lg:grid-cols-[4fr_8fr] gap-6">
           {/* LOGO */}
           {/* <UploadButton
             endpoint="imageUploader"
@@ -80,24 +84,22 @@ export default function EmployerProfileForm({ initialData }) {
             <label>Company Logo</label>
             {avatarUrl ? (
               <div className="flex items-center gap-4">
-                <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-border">
+                <div className="relative w-50 h-50 rounded-lg overflow-hidden border-2 border-border">
                   <img
                     src={avatarUrl}
                     alt="Company logo"
                     className="w-full h-full object-cover"
-                    width={100}
-                    height={100}
                   />
                 </div>
                 <button
                   type="button"
+                  className="bg-black text-white px-2 py-2 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
                   variant="destructive"
                   size="sm"
                   onClick={handleRemoveAvatar}
                 >
                   {/* < className="w-4 h-4 mr-2" /> */}
-                  Remove Lo1234
-                  12go
+                  Remove Logo
                 </button>
               </div>
             ) : (
@@ -107,6 +109,45 @@ export default function EmployerProfileForm({ initialData }) {
                   const profilePic = res[0];
 
                   setValue("avatarUrl", profilePic.ufsUrl, {
+                    shouldDirty: true,
+                  });
+                  console.log("Files--: ", res);
+                }}
+                onUploadError={(error) => {
+                  toast.error(`Upload failed: ${error.message}`);
+                }}
+              />
+            )}
+          </div>
+          <div>
+            <label>Banner Image</label>
+            {bannerImageUrl ? (
+              <div className="flex items-center gap-4">
+                <div className="relative w-100 h-50 rounded-lg overflow-hidden border-2 border-border">
+                  <img
+                    src={bannerImageUrl}
+                    alt="Company logo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="bg-black text-white px-3 py-2 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleRemoveBanner}
+                >
+                  {/* < className="w-4 h-4 mr-2" /> */}
+                  Remove Banner
+                </button>
+              </div>
+            ) : (
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  const profilePic = res[0];
+
+                  setValue("bannerImageUrl", profilePic.ufsUrl, {
                     shouldDirty: true,
                   });
                   console.log("Files--: ", res);

@@ -87,5 +87,5 @@ export const employerProfileSchema = z.object({
 
   avatarUrl: z.url("Please upload the image"),
 
-  // bannerImageUrl: z.url("Please upload the image").optional().or(z.literal("")),
+  bannerImageUrl: z.url("Please upload the image").optional().or(z.literal("")),
 });

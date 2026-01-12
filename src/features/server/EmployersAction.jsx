@@ -21,7 +21,7 @@ export const updateEmployerProfileAction = async (data) => {
     if (error) return { status: "ERROR", message: error.issues[0].message };
 
     // console.log(formData.get("name"));
-    const { name, description, organizationType, teamSize, yearOfEstablishment, websiteUrl, location, avatarUrl } = validatedData;
+    const { name, description, organizationType, teamSize, yearOfEstablishment, websiteUrl, location, avatarUrl, bannerImageUrl } = validatedData;
 
     const updateEmployer = await db
       .update(employers)
@@ -35,6 +35,7 @@ export const updateEmployerProfileAction = async (data) => {
           : null,
         websiteUrl,
         location,
+        bannerImageUrl,
       })
       .where(eq(employers.id, currentUser.id));
 
