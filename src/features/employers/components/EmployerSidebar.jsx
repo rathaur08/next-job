@@ -29,7 +29,7 @@ const menuItems = [
   },
   {
     name: "Post a Job",
-    href: "#",
+    href: "/employer-dashboard/jobs",
     icon: PlusIcon,
   },
   {
