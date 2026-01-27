@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/config/db";
-import { JobsFormData, jobsSchema } from "../employers/jobs/JobsSchema";
+import { jobsSchema } from "../employers/jobs/JobsSchema";
 import { jobs } from "@/drizzle/schema";
 import { getCurrentUser } from "../auth/server/auth.queries";
 
