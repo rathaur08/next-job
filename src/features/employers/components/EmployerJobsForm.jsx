@@ -9,12 +9,13 @@ import {
   SALARY_PERIOD,
   MIN_EDUCATION,
 } from "@/config/constant";
-import { createJobAction } from "@/features/server/JobsAction";
+import { createJobAction, updateJobAction } from "@/features/server/JobsAction";
 import { toast } from "react-toastify";
 import { jobsSchema } from "../jobs/JobsSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
-const EmployerJobsForm = () => {
+const EmployerJobsForm = ({ initialData, isEditMode = false, }) => {
   const {
     register,
     control,
@@ -22,19 +23,57 @@ const EmployerJobsForm = () => {
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     resolver: zodResolver(jobsSchema),
+    defaultValues: initialData
+      ? {
+        ...initialData,
+        // FIX 1: Handle Date Format
+        expiresAt: initialData.expiresAt
+          ? new Date(initialData.expiresAt).toISOString().split("T")[0] //"2026-01-20T18:15:00.000Z"
+          : "",
+      }
+      : {
+        title: "",
+        description: "",
+
+        jobType: undefined,
+        workType: undefined,
+        jobLevel: undefined,
+
+        location: "",
+        tags: "",
+
+        minSalary: "",
+        maxSalary: "",
+        salaryCurrency: undefined,
+        salaryPeriod: undefined,
+
+        minEducation: undefined,
+        experience: "",
+        expiresAt: "",
+      },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (data) => {
-    console.log("JOB DATA:", data);
-
-    const response = await createJobAction(data);
-
-    if (response.status === "SUCCESS") {
-      toast.success(response.message);
-    } else {
-      toast.error(response.message);
+    try {
+      let response;
+      if (isEditMode && initialData) {
+        // --- UPDATE FLOW ---
+        response = await updateJobAction(initialData.id, data);
+      } else {
+        // --- CREATE FLOW ---
+        response = await createJobAction(data);
+      }
+      // const response = await createJobAction(data);
+      if (response.status === "SUCCESS") {
+        toast.success(response.message);
+        router.push("/employer-dashboard/jobs");
+        // router.refresh(); // Ensure the list page shows new data
+      } else toast.error(response.message);
+    } catch (error) {
+      toast.error("Something went wrong");
     }
-
   };
 
   return (
@@ -146,22 +185,15 @@ const EmployerJobsForm = () => {
             disabled={!isDirty}
             className="bg-black text-white px-6 py-2 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
-            {isSubmitting ? "Saving Changes..." : " Post Job "}
+            {isEditMode
+              ? isSubmitting ? "Saving..." : "Update Job"
+              : isSubmitting ? "Saving..." : "Post Job"}
           </button>
 
           {!isDirty && (
             <p className="text-sm text-gray-500">No changes to save</p>
           )}
         </div>
-        {/* <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            className="bg-black text-white px-5 py-2 rounded-md text-sm"
-          >
-            Post Job
-          </button>
-          <span className="text-sm text-gray-400">No changes to save</span>
-        </div> */}
       </form>
     </div>
   );

@@ -29,12 +29,12 @@ const menuItems = [
   },
   {
     name: "Post a Job",
-    href: "/employer-dashboard/jobs",
+    href: "/employer-dashboard/jobs/create",
     icon: PlusIcon,
   },
   {
     name: "My Jobs",
-    href: "#",
+    href: "/employer-dashboard/jobs",
     icon: BuildingOffice2Icon,
   },
   {
@@ -56,12 +56,12 @@ const menuItems = [
 
 /* ---------------- ACTIVE LINK LOGIC (JSX SAFE) ---------------- */
 
-function isLinkActive({ href, pathname, base = "/" }) {
-  const normalizedHref = href.replace(/\/$/, "") || "/";
+function isLinkActive({ href, pathname }) {
+  const cleanHref = href.replace(/\/$/, "");
+  const cleanPath = pathname.replace(/\/$/, "");
 
-  return normalizedHref === base
-    ? pathname === base || pathname === base + "/"
-    : pathname.startsWith(normalizedHref);
+  // exact match only
+  return cleanPath === cleanHref;
 }
 
 /* ---------------- SIDEBAR ---------------- */
@@ -81,7 +81,6 @@ const EmployerSidebar = () => {
           const active = isLinkActive({
             href: item.href,
             pathname,
-            base: "/employer-dashboard",
           });
 
           return (
