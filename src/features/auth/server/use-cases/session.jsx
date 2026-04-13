@@ -51,57 +51,60 @@ export const createSessionAndCookies = async (userId, tx = db) => {
 }
 
 export const validateSessionAndGetUser = async (session) => {
-  //
-  const hashedToken = crypto
-    .createHash("sha-256")
-    .update(session)
-    .digest("hex");
+  try {
+    const hashedToken = crypto
+      .createHash("sha-256")
+      .update(session)
+      .digest("hex");
 
-  const [user] = await db
-    .select({
-      id: users.id,
-      session: {
-        id: sessions.id,
-        expiresAt: sessions.expiresAt,
-        userAgent: sessions.userAgent,
-        ip: sessions.ip,
-      },
-      name: users.name,
-      userName: users.userName,
-      role: users.role,
-      phoneNumber: users.phoneNumber,
-      email: users.email,
-      // emailVerifiedAt: users.emailVerifiedAt,
-      avatarUrl: users.avatarUrl,
-      createdAt: users.createdAt,
-      updatedAt: users.updatedAt,
-    })
-    .from(sessions)
-    .where(eq(sessions.id, hashedToken))
-    .innerJoin(users, eq(users.id, sessions.userId));
+    const [user] = await db
+      .select({
+        id: users.id,
+        session: {
+          id: sessions.id,
+          expiresAt: sessions.expiresAt,
+          userAgent: sessions.userAgent,
+          ip: sessions.ip,
+        },
+        name: users.name,
+        userName: users.userName,
+        role: users.role,
+        phoneNumber: users.phoneNumber,
+        email: users.email,
+        avatarUrl: users.avatarUrl,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(sessions)
+      .innerJoin(users, eq(users.id, sessions.userId))
+      .where(eq(sessions.id, hashedToken));
 
-  if (!user) return null;
+    if (!user) return null;
 
-  // after getting user check session expiry
-  if (Date.now() >= user.session.expiresAt.getTime()) {
-    await invalidDateSession(user.session.id);
+    // after getting user check session expiry
+    if (Date.now() >= user.session.expiresAt.getTime()) {
+      await invalidDateSession(user.session.id);
+      return null;
+    }
+
+    // session is valid, extend session expiry
+    if (
+      Date.now() >=
+      user.session.expiresAt.getTime() - SESSION_REFRESH_TIME * 1000
+    ) {
+      await db
+        .update(sessions)
+        .set({
+          expiresAt: new Date(Date.now() + SESSION_LIFETIME * 1000),
+        })
+        .where(eq(sessions.id, user.session.id));
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Session validation error:", error);
     return null;
   }
-
-  // session is valid, extend session expiry
-  if (
-    Date.now() >=
-    user.session.expiresAt.getTime() - SESSION_REFRESH_TIME * 1000
-  ) {
-    await db
-      .update(sessions)
-      .set({
-        expiresAt: new Date(Date.now() + SESSION_LIFETIME * 1000),
-      })
-      .where(eq(sessions.id, user.session.id));
-  }
-
-  return user;
 };
 
 // invalidate session by id
